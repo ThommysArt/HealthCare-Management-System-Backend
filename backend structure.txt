@@ -1,0 +1,17 @@
+Gae
+- Book Appointment
+- View Appointments
+
+Thomson
+- Admin login
+- Patient Login
+- Doctor login
+
+Ange
+- Add Doctors
+- Add Patient
+
+Edimo
+- View Patient
+- View Doctor
+- 
