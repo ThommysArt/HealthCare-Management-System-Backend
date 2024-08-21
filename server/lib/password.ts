@@ -6,3 +6,7 @@ export async function saltAndHashPassword(password: string) {
   const hash = await bcrypt.hash(password, salt);
   return hash;
 }
+
+export async function verifyPassword(plainTextPassword: string, hashedPassword: string): Promise<boolean> {
+  return bcrypt.compareSync(plainTextPassword, hashedPassword);
+}

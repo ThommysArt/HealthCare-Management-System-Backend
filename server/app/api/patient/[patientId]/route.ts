@@ -3,11 +3,9 @@ import { PrismaClient, Role } from "@prisma/client";
 export async function GET (req: Request, params: { patientId: number}) {
     try {
         const prisma = new PrismaClient()
-        const data = await req.json()
         const patient = await prisma.patient.findFirst({
             where: {
                 patientId: params.patientId,
-                ...data
             }
         })
         return Response.json(patient, { status: 200})

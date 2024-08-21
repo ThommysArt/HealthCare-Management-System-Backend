@@ -1,27 +1,34 @@
 import { PrismaClient, Role } from "@prisma/client";
 import { saltAndHashPassword } from "@/lib/password";
+import bcrypt from "bcrypt";
 
-export async function GET (req: Request) {
+export async function PATCH (req: Request) {
     try {
         const prisma = new PrismaClient()
         const data = await req.json()
         const user = await prisma.user.findFirst({
             where: {
                 email: data.email,
-                password: await saltAndHashPassword(data.password)
             }
         })
-        const doctors = await prisma.doctor.findFirst({
-            where: {
-                ...data,
-            }
-        })
-        return Response.json(doctors, { status: 201})
+
+        if (user && bcrypt.compareSync(data.password, user.password)) {
+            const doctor = await prisma.doctor.findFirst({
+                where: {
+                    userId: user.userId,
+                }
+            })
+            return Response.json(doctor, { status: 200})
+        } else {
+            return Response.json({ message: "Invalid email or password" }, { status: 401 })
+        }
     } catch (error) {
         console.log("DOCTOR | GET :", error)
         return new Response("Internal Server error", {status: 500})
     }
 }
+
+
 
 export async function POST (req: Request) {
     try {
@@ -29,9 +36,9 @@ export async function POST (req: Request) {
         const data = await req.json()
         const user = await prisma.user.create({
             data: {
+                ...data,
                 role: Role.DOCTOR,
                 password: await saltAndHashPassword(data.password),
-               ...data
             }
         })
         const doctor = await prisma.doctor.create({
@@ -39,7 +46,7 @@ export async function POST (req: Request) {
                 userId: user.userId
             }
         })
-        return Response.json(doctor, { status: 200})
+        return Response.json(doctor, { status: 201})
     } catch (error) {
         console.log("DOCTOR | POST :", error)
         return new Response("Internal Server error", {status: 500})
