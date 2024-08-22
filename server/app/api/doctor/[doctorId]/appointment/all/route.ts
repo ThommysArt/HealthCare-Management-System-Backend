@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 
-export async function PATCH(req: NextRequest) {
+export async function GET(req: NextRequest) {
     try {
         const prisma = new PrismaClient();
         const appointments = await prisma.appointment.findMany();
